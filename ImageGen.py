@@ -23,6 +23,7 @@ test_data = [
 
 def generate(name: str, date: str):
     """
+    Generates a single diploma image given a name and date.
 
     :param name: The name that should appear on the diploma
     :param date: The date that should appear on the diploma
