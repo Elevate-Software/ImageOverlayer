@@ -1,10 +1,11 @@
 # Description
 # -------------
-# Uploads an image to Pinata (IPFS)
+# Uploads an image to Pinata, then a metadata JSON with link to that image (IPFS)
 
 # Resources
 # -------------
-# https://docs.pinata.cloud/api-pinning/pinning-services-api
+# Pin File: https://docs.pinata.cloud/api-pinning/pin-file
+# Pin JSON: https://docs.pinata.cloud/api-pinning/pin-json
 
 import requests
 import json
@@ -22,8 +23,9 @@ def pin_all_to_IPFS():
     """
     Pins all files in /output directory to IPFS via Pinata API
 
-    :return:
+    :return: a list of the URIs we created with names as a key so we know who's is who's
     """
+    list_of_uris = []
 
     filenames = ['output/' + fn for fn in os.listdir(os.getcwd() + '/output')]
 
@@ -41,6 +43,11 @@ def pin_all_to_IPFS():
         json_metadata = construct_metadata(f, r.json()['IpfsHash'])
         r = requests.post(json_url, headers=headers, json=json_metadata)
 
+        # append link to a list to be returned
+        list_of_uris.append(construct_output_tuple(f, r.json()['IpfsHash']))
+
+    return list_of_uris
+
 
 def construct_metadata(filename, hash):
     name = filename.split('_')[0].split('/')[1]
@@ -50,11 +57,17 @@ def construct_metadata(filename, hash):
 
     formatted_obj = {
         'name': name,
-        'image_url': link,
-        'description': desc
+        'description': desc,
+        'image_url': link
     }
 
     return formatted_obj
+
+
+def construct_output_tuple(filename, hash):
+    name = filename.split('_')[0].split('/')[1]
+    uri = 'https://gateway.pinata.cloud/ipfs/' + hash
+    return name, uri
 
 
 if __name__ == "__main__":
