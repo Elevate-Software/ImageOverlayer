@@ -14,7 +14,7 @@ import os
 
 
 # contact address and contract abi for creating contract object
-contract_address = "0xf0775e5a21e6f17009304D6565E9434977f938aE"
+contract_address = "0x96807aD777850A9336B9aD9F9Bb625CaD4eC0e5a"
 with open("contract_abi.json", "r") as f:
     contract_abi = json.load(f)
 
@@ -31,13 +31,13 @@ def get_new_token_id():
     :return:
     """
 
-    # print(nft_contract.all_functions())   # shows names of all functions on contract
-    # print(nft_contract.functions.name().call())
-    # print(nft_contract.functions.balanceOf('0x42A5243D51176bdCED13F40E3C85b7259e84c113').call())
-    # print(nft_contract.functions.tokenURI(2).call())
-
+    #print(nft_contract.all_functions())   # shows names of all functions on contract
+    #print(nft_contract.functions.name().call())
+    #print(nft_contract.functions.balanceOf('0x42A5243D51176bdCED13F40E3C85b7259e84c113').call())
+    #print(nft_contract.functions.tokenURI(2).call())
+    print(nft_contract.functions.nextID().call())
     # TODO: function will be removed when a get_token function is added to the smart contract
-    return 9    # CHANGE THIS
+    return nft_contract.functions.nextID().call()    # CHANGE THIS
 
 
 def mint_nft(to_address, uri):
@@ -47,21 +47,21 @@ def mint_nft(to_address, uri):
 
     token_id = get_new_token_id()
 
-    # build the transaction
     mint_txn = nft_contract.functions.mint(
         to_address,     # owner of newly minted NFT
         token_id,       # unique identifier for the NFT
         uri,            # hosted link of JSON metadata
     ).buildTransaction({
-        'chainId': 3,   # 3 is for ropsten, 1 is for mainnet
-        'gas': 70000,
-        'maxFeePerGas': w3.toWei('2', 'gwei'),
-        'maxPriorityFeePerGas': w3.toWei('1', 'gwei'),
+        'gas': 700000,
+        'gasPrice': w3.toWei('2', 'gwei'),
+        'from': to_address,
         'nonce': nonce,
     })
 
+
     # sign the transaction
-    private_key = os.environ['PK']
+    # private_key = os.environ['PK']
+    private_key = "6cdaf8521e2867e3b1ad14fbaaa8309891ef7aa271fec3880724e92fe057ec0c"
     signed_txn = w3.eth.account.sign_transaction(mint_txn, private_key=private_key)
 
     # broadcast the transaction
@@ -76,3 +76,4 @@ if __name__ == "__main__":
     uri = "https://gateway.pinata.cloud/ipfs/Qmc7yWr8Q8j3fWJMK6zcwUEYPUcigeTDbBca857xD7Sg5Q"    # JSON
     mint_nft(my_address, uri)
     print(nft_contract.functions.balanceOf(my_address).call())
+
