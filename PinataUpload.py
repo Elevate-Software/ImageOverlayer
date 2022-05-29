@@ -49,8 +49,14 @@ def pin_all_to_IPFS():
     return list_of_uris
 
 
+# turns the filename back into the user's name
+def process_name(filename):
+    return filename.split('_')[0].split('/')[1]
+
+
+# constructs the json object ot be uploaded to IPFS
 def construct_metadata(filename, hash):
-    name = filename.split('_')[0].split('/')[1]
+    name = process_name(filename)
     link = 'https://gateway.pinata.cloud/ipfs/' + hash
     desc = f"This certifies that {name} has met the requirements for their exceptional performance in the " \
            "Fundamentals of Decentralised Finance / Digital Asset Portfolio Management curriculum."
@@ -65,7 +71,7 @@ def construct_metadata(filename, hash):
 
 
 def construct_output_tuple(filename, hash):
-    name = filename.split('_')[0].split('/')[1]
+    name = process_name(filename)
     uri = 'https://gateway.pinata.cloud/ipfs/' + hash
     return name, uri
 
