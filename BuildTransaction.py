@@ -12,6 +12,9 @@ from web3.auto import w3
 import json
 import os
 
+from datetime import datetime
+import logging
+
 
 class MintFactory:
 
@@ -36,7 +39,7 @@ class MintFactory:
         return self.w3.eth.contract(address=self.contract_address, abi=contract_abi)
 
     def set_nonce(self):
-        return self.w3.eth.get_transaction_count(self.owner_address) + 10
+        return self.w3.eth.get_transaction_count(self.owner_address, 'pending')
 
     def set_token_count(self):
         return self.nft_contract.functions.nextID().call() + 1
@@ -56,7 +59,7 @@ class MintFactory:
             uri,            # hosted link of JSON metadata
         ).buildTransaction({
             'gas': 700000,
-            'gasPrice': w3.toWei('2', 'gwei'),
+            'gasPrice': self.w3.eth.gas_price,
             'from': self.owner_address,
             'nonce': nonce,
             'chainId': 3,
@@ -69,6 +72,18 @@ class MintFactory:
         # broadcast the transaction
         bc_txn = self.w3.eth.send_raw_transaction(signed_txn.rawTransaction)
         w3.toHex(w3.keccak(signed_txn.rawTransaction))
+
+        # txhash = signed_txn['hash']
+        # tx_status = self.w3.eth.wait_for_transaction_receipt(txhash)['status']
+        # if tx_status == 0:
+        #     msg = "{} >>>> Failed txn. See tx hash for more: {}".format(datetime.now(), txhash.hex())
+        #     print(msg)
+        #     logging.info(msg)
+        # else:
+        #     msg = "{} >>>> Successful txn. Txhash: {}".format(datetime.now(), signed_txn['hash'].hex())
+        #     logging.info(msg)
+        #     print(msg)
+
         return bc_txn
 
 
