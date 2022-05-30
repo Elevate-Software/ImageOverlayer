@@ -19,7 +19,7 @@ NAME_POSITION = (1391 // 2, 983 // 2 - 80)      # center point for drawing the n
 NAME_COLOR = (74, 79, 77)                       # color (r, g, b)
 MAX_WIDTH = 800                                 # max width that the name should take up
 
-# test names and dates (temporary)
+# test names only
 test_data = [
     "Matthew Merrill",
     "Humongo-Long-Ass-Mother-Trucking-Giant-Name McDuff",

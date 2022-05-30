@@ -70,6 +70,7 @@ def construct_metadata(filename, hash):
     return formatted_obj
 
 
+# creates a tuple to add to the list that will be returned by pin_all_to_ipfs()
 def construct_output_tuple(filename, hash):
     name = process_name(filename)
     uri = 'https://gateway.pinata.cloud/ipfs/' + hash
