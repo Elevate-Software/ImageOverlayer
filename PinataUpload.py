@@ -8,16 +8,9 @@
 # Pin JSON: https://docs.pinata.cloud/api-pinning/pin-json
 
 import requests
-import json
 import os
 
 psa_endpoint = 'https://api.pinata.cloud'  # pinata base URL
-
-# TODO: change this to be an environment variable?
-# read the JSON web token (bearer token) from json file
-with open("JWT.json", 'r') as file:
-    file_data = json.load(file)
-    jwt = file_data['jwt']
 
 
 def pin_all_to_IPFS():
@@ -32,6 +25,7 @@ def pin_all_to_IPFS():
 
     url = psa_endpoint + '/pinning/pinFileToIPFS'
     json_url = psa_endpoint + '/pinning/pinJSONToIPFS'
+    jwt = os.environ['JWT']
     headers = {'Authorization': 'Bearer ' + jwt}
 
     for f in filenames:
