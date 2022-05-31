@@ -31,22 +31,50 @@ class MintFactory:
         print(f"Next token ID: {self.token}")
 
     def set_w3(self, network):
-        return Web3(Web3.HTTPProvider(f'https://{network}.infura.io/v3/4dd6cccb7c6c4c7a9a01f8b02b1ada03'))
+        """
+        Web3 provider object used for contract and transactions.
+
+        :param network: Network name (ie. mainnet, ropsten, rinkeby)
+        :return: web3 provider object.
+        """
+        return Web3(Web3.HTTPProvider(f'https://{network.lower()}.infura.io/v3/4dd6cccb7c6c4c7a9a01f8b02b1ada03'))
 
     def set_contract(self):
+        """
+        Contract object used for smart contract function calls.
+
+        :return: smart contract object.
+        """
         with open("contract_abi.json", "r") as f:
             contract_abi = json.load(f)
         return self.w3.eth.contract(address=self.contract_address, abi=contract_abi)
 
     def set_nonce(self):
+        """
+        Increasing numeric value used to  uniquely identify transactions (specific to contract owner).
+
+        :return: Contract owner's transactions (pending txns included).
+        """
         return self.w3.eth.get_transaction_count(self.owner_address, 'pending')
 
     def set_token_count(self):
+        """
+        Unique identifier for each NFT.
+
+        :return: The next available token ID for this smart contract.
+        """
         return self.nft_contract.functions.nextID().call() + 1
 
 # mints an NFT
     def mint_nft(self, to_address, uri):
-        # get nonce and token id for transaction
+        """
+        Mints an NFT hosted at 'uri' to address 'to_address'.
+
+        :param to_address: Address that will own the NFT.
+        :param uri: URI where JSON metadata of NFT is hosted.
+        :return: The minting transaction hash.
+        """
+        # get nonce and token id for transaction, and increment them
         nonce = self.nonce
         self.nonce += 1
 
@@ -65,7 +93,7 @@ class MintFactory:
             'chainId': 3,
         })
 
-        # sign the transaction
+        # sign the transaction as the owner
         private_key = os.environ['PK']
         signed_txn = self.w3.eth.account.sign_transaction(mint_txn, private_key=private_key)
 
@@ -73,6 +101,7 @@ class MintFactory:
         bc_txn = self.w3.eth.send_raw_transaction(signed_txn.rawTransaction)
         w3.toHex(w3.keccak(signed_txn.rawTransaction))
 
+        # !! the below code waits for each txn to be confirmed before continuing with the next.
         # txhash = signed_txn['hash']
         # tx_status = self.w3.eth.wait_for_transaction_receipt(txhash)['status']
         # if tx_status == 0:
@@ -87,8 +116,8 @@ class MintFactory:
         return bc_txn
 
 
+# tests a single call to mint function
 if __name__ == "__main__":
-    # my_address = '0x4dE801A18FaA4268eBe916F132CcD760b7C649B9'
     contract_address = "0x96807aD777850A9336B9aD9F9Bb625CaD4eC0e5a"
     owner_address = '0x42A5243D51176bdCED13F40E3C85b7259e84c113'
     mint_factory = MintFactory(contract_address, owner_address, network="ropsten")

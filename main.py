@@ -4,6 +4,9 @@ from BuildTransaction import MintFactory
 import csv
 import os
 
+# DESC: coordinates project files to generate and mint an NFT to each user in graduates.csv.
+# DEV: list 'users' and list 'pinned_uris' are both tuples sorted by user name (element 0)
+#       so that we can correctly associate user address to IPFS file.
 
 # delete files in image folder before running to avoid any issues
 filenames = ['output/' + fn for fn in os.listdir(os.getcwd() + '/output')]

@@ -11,8 +11,9 @@ import requests
 import json
 import os
 
-psa_endpoint = 'https://api.pinata.cloud'  # pinning services API endpoint
+psa_endpoint = 'https://api.pinata.cloud'  # pinata base URL
 
+# TODO: change this to be an environment variable?
 # read the JSON web token (bearer token) from json file
 with open("JWT.json", 'r') as file:
     file_data = json.load(file)
@@ -21,9 +22,9 @@ with open("JWT.json", 'r') as file:
 
 def pin_all_to_IPFS():
     """
-    Pins all files in /output directory to IPFS via Pinata API
+    Pins all files in /output directory to IPFS via Pinata API.
 
-    :return: a list of the URIs we created with names as a key so we know who's is who's
+    :return: a list of the URIs created with names as a key so we know whose is whose.
     """
     list_of_uris = []
 
@@ -49,15 +50,26 @@ def pin_all_to_IPFS():
     return list_of_uris
 
 
-# turns the filename back into the user's name
 def process_name(filename):
+    """
+    Turns the provided filename back into the user's name.
+
+    :param filename: the filename, format: 'output/First Last_diploma.png'
+    :return: the user's name: ex.'First Last'
+    """
     return filename.split('_')[0].split('/')[1]
 
 
-# constructs the json object ot be uploaded to IPFS
-def construct_metadata(filename, hash):
+def construct_metadata(filename, ipfs_hash):
+    """
+    Constructs the JSON metadata to be uploaded to IPFS and used as the NFT JSON link.
+
+    :param filename: The image file path (gets converted back to person's First Last name).
+    :param ipfs_hash: IPFS has returned by Pinata API call (used to create link to hosted image file).
+    :return: formatted dictionary that will be passed as the JSON for uploading to IPFS.
+    """
     name = process_name(filename)
-    link = 'https://gateway.pinata.cloud/ipfs/' + hash
+    link = 'https://gateway.pinata.cloud/ipfs/' + ipfs_hash
     desc = f"This certifies that {name} has met the requirements for their exceptional performance in the " \
            "Fundamentals of Decentralised Finance / Digital Asset Portfolio Management curriculum."
 
@@ -70,12 +82,19 @@ def construct_metadata(filename, hash):
     return formatted_obj
 
 
-# creates a tuple to add to the list that will be returned by pin_all_to_ipfs()
-def construct_output_tuple(filename, hash):
+def construct_output_tuple(filename, ipfs_hash):
+    """
+    Creates the tuple needed for minting the NFT to the correct person.
+
+    :param filename: Image file path (converted to the person's First Last name).
+    :param ipfs_hash: Hash returned by Pinata representing the pinned JSON object (converted to URI of object).
+    :return: Tuple of format (name, uri).
+    """
     name = process_name(filename)
-    uri = 'https://gateway.pinata.cloud/ipfs/' + hash
+    uri = 'https://gateway.pinata.cloud/ipfs/' + ipfs_hash
     return name, uri
 
 
+# tests pinning all files
 if __name__ == "__main__":
     pin_all_to_IPFS()

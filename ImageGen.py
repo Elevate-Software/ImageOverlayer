@@ -19,19 +19,12 @@ NAME_POSITION = (1391 // 2, 983 // 2 - 80)      # center point for drawing the n
 NAME_COLOR = (74, 79, 77)                       # color (r, g, b)
 MAX_WIDTH = 800                                 # max width that the name should take up
 
-# test names only
-test_data = [
-    "Matthew Merrill",
-    "Humongo-Long-Ass-Mother-Trucking-Giant-Name McDuff",
-    "James Hernandez-Chavez Smithsonian"
-]
-
 
 def generate(name: str):
     """
     Generates a single diploma image given a name and date.
 
-    :param name: The name that should appear on the diploma
+    :param name: The name that should appear on the diploma.
     :return:
     """
 
@@ -55,7 +48,13 @@ def generate(name: str):
     img.save(f"output/{name}_diploma.png")
 
 
-# Runs test data if this is the main file
+# generates images for all names in the test data
 if __name__ == "__main__":
+    test_data = [
+        "Matthew Merrill",
+        "Humongo-Long-Ass-Mother-Trucking-Giant-Name McDuff",
+        "James Hernandez-Chavez Smithsonian"
+    ]
+
     for item in test_data:
         generate(item)
