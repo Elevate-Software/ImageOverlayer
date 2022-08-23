@@ -90,7 +90,7 @@ class MintFactory:
             'gasPrice': self.w3.eth.gas_price,
             'from': self.owner_address,
             'nonce': nonce,
-            'chainId': 3,
+            'chainId': 137,
         })
 
         # sign the transaction as the owner
